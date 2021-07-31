@@ -12,13 +12,13 @@ Get-VM | ForEach-Object {Export-VM -Name $_.Name -Path "$intermediarydir\$name" 
 
 if ([string]::IsNullOrEmpty($password))
 {
-	& "$env:ProgramFiles\7-Zip\7z.exe" a -mx=9 -sdel "$destination\$name.7z" "$intermediarydir\$name"
+	& "$env:ProgramFiles\7-Zip\7z.exe" a -mx=9  "$destination\$name.7z" "$intermediarydir\$name"
 }
 else
 {
-	& "$env:ProgramFiles\7-Zip\7z.exe" a -mx=9 -p="$password" -sdel "$destination\$name.7z" "$intermediarydir\$name"
+	& "$env:ProgramFiles\7-Zip\7z.exe" a -mx=9 -p="$password" "$destination\$name.7z" "$intermediarydir\$name"
 }
-
+"$intermediarydir\$name" | Remove-Item
 
 while ((Get-ChildItem "$destination" -filter *.7z | measure-object).Count -gt $backupdepth)
 {
