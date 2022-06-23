@@ -11,7 +11,7 @@ $checkpoint = "Baseline $(Get-Date)"
 
 Get-VM | ForEach-Object {Export-VM -Name $_.Name -Path "$intermediarydir\$name" -CaptureLiveState CaptureSavedState -AsJob} | Wait-Job
 
-$checkpoints = Get-VM | Checkpoint-VM -SnapshotType $checkpoint -AsJob
+$checkpoints = Get-VM | Checkpoint-VM -SnapshotName $checkpoint -AsJob
 
 if ([string]::IsNullOrEmpty($password))
 {
