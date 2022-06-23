@@ -7,8 +7,11 @@ param(
 )
 
 $name = Get-Date -format "yyyy-MM-dd-HH-mm"
+$checkpoint = "Baseline $(Get-Date)"
 
 Get-VM | ForEach-Object {Export-VM -Name $_.Name -Path "$intermediarydir\$name" -CaptureLiveState CaptureSavedState -AsJob} | Wait-Job
+
+$checkpoints = Get-VM | Checkpoint-VM -SnapshotType $checkpoint -AsJob
 
 if ([string]::IsNullOrEmpty($password))
 {
@@ -20,6 +23,15 @@ else
 }
 "$intermediarydir\$name" | Remove-Item
 
+$checkpoints | Wait-Job
+
+foreach($item in Get-VM | Get-VMSnapshot)
+{
+	if ($item.Name -match "Automatic" -or ($item.Name -match "baseline" -and $item.Name -ne $checkpoint))
+	{
+		Get-VM $item.VMName | Remove-VMSnapshot -Name $item.Name
+	}
+}
 while ((Get-ChildItem "$destination" -filter *.7z | measure-object).Count -gt $backupdepth)
 {
 	Get-ChildItem -Path "$destination" -filter *.7z | sort creationtime | select -First 1 | Remove-Item
