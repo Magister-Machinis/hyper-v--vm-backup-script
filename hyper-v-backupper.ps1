@@ -21,7 +21,6 @@ else
 {
 	& "$env:ProgramFiles\7-Zip\7z.exe" a -mx=9 -p="$password" "$destination\$name.7z" "$intermediarydir\$name"
 }
-"$intermediarydir\$name" | Remove-Item -force
 
 $checkpoints | Wait-Job
 
@@ -36,3 +35,5 @@ while ((Get-ChildItem "$destination" -filter *.7z | measure-object).Count -gt $b
 {
 	Get-ChildItem -Path "$destination" -filter *.7z | sort creationtime | select -First 1 | Remove-Item -force
 }
+
+"$intermediarydir\$name" | Remove-Item -force -recurse
